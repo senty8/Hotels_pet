@@ -1,4 +1,4 @@
-package school.faang.user_service.config.swagger;
+package com.senty.hotels_pet.config;
 
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -12,8 +12,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenApi() {
         return new OpenAPI()
-                .info(new Info().title("User Service API")
-                        .description("API documentation for the User Service of Corporation X project")
+                .info(new Info().title("Hotel Pet API")
+                        .description("API documentation for the Hotel pet service")
                         .version("1.0"));
     }
 }

@@ -1,0 +1,30 @@
+spring:
+  mvc:
+    servlet:
+      path: /property-view
+
+  application:
+    name: Hotels_pet
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hotel_db
+    driver-class-name: org.postgresql.Driver
+    username: user
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-postgres.yaml
+
+  h2:
+    console:
+      enabled: true
+      path: /hotel_db
+
+server:
+  port: 8092

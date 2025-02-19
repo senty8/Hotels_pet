@@ -1,19 +1,24 @@
-package com.senty.hotels_pet.strategy.hotel;
+package com.senty.hotels_pet.strategy.histogram.hotel;
 
 import com.senty.hotels_pet.repository.HotelRepository;
+import com.senty.hotels_pet.strategy.histogram.HistogramStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class BrandHotelHistogramStrategy implements HotelHistogramStrategy {
+public class BrandHistogramStrategy implements HistogramStrategy {
     private final HotelRepository hotelRepository;
 
     @Override
     public Map<String, Long> produce() {
-        return hotelRepository.countByBrands();
+        return hotelRepository.countByBrands()
+                .stream()
+                .collect(Collectors.toMap(tuple -> tuple.get(0, String.class),
+                        tuple -> tuple.get(1, Long.class)));
     }
 
     @Override

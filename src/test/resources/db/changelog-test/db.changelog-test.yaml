@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog-test/changeset/hotel_db_V001_create_address_table.sql
+  - include:
+      file: db/changelog-test/changeset/hotel_db_V002_create_contacts_table.sql
+  - include:
+      file: db/changelog-test/changeset/hotel_db_V003_create_arrival_time_table.sql
+  - include:
+      file: db/changelog-test/changeset/hotel_db_V004_create_amenity_table.sql
+  - include:
+      file: db/changelog-test/changeset/hotel_db_V005_create_hotel_and_amenity_hotel_tables.sql
+  - include:
+      file: db/changelog-test/changeset/hotel_db_V006_insert_test_data_to_all_tables.sql

@@ -1,8 +1,8 @@
-package com.senty.hotels_pet.strategy.hotel;
+package com.senty.hotels_pet.strategy.histogram;
 
 import java.util.Map;
 
-public interface HotelHistogramStrategy {
+public interface HistogramStrategy {
     Map<String, Long> produce();
 
     String getName();

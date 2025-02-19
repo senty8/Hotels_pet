@@ -1,5 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: db/changelog/changeset/drop.sql
-  - include:
-      file: db/changelog/changeset/hotel_V000_initial.sql
