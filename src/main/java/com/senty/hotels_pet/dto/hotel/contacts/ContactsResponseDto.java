@@ -1,4 +1,9 @@
 package com.senty.hotels_pet.dto.hotel.contacts;
 
-public class ContactsResponceDto {
+import lombok.Data;
+
+@Data
+public class ContactsResponseDto {
+    private String phone;
+    private String email;
 }

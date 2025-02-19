@@ -10,13 +10,13 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "ameniti")
-public class Amenities {
+@Table(name = "amenity")
+public class Amenity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "name", nullable = false, length = 64)
+    @Column(name = "name", nullable = false, unique = true, length = 64)
     private String name;
 }

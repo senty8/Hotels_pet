@@ -1,5 +1,5 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/changeset/drop.sql
+      file: db/changelog/changeset/postgres/drop.sql
   - include:
-      file: db/changelog/changeset/hotel_V000_initial.sql
+      file: db/changelog/changeset/postgres/hotel_V000_initial.sql

@@ -1,11 +1,13 @@
+package com.senty.hotels_pet.config.converter;
+
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-@Converter(autoApply = true)
-public class LocalTimeConverter implements AttributeConverter<LocalTime, String> {
+@Converter
+public class ArrivalTimeConverter implements AttributeConverter<LocalTime, String> {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
