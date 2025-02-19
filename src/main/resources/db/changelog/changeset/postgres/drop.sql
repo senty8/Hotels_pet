@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS address;
+DROP TABLE IF EXISTS contacts;
+DROP TABLE IF EXISTS arrival_time;
+DROP TABLE IF EXISTS amenity;
+DROP TABLE IF EXISTS hotel;
+DROP TABLE IF EXISTS hotel_amenity;
