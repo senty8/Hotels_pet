@@ -30,11 +30,7 @@ class AmenityServiceTest {
     void setUp() {
         amenitiesNames = new HashSet<>(Arrays.asList("Pool", "Gym", "Spa"));
         amenitiesToSave = amenitiesNames.stream()
-                .map(name -> {
-                    Amenity amenity = new Amenity();
-                    amenity.setName(name);
-                    return amenity;
-                })
+                .map(Amenity::new)
                 .collect(Collectors.toSet());
     }
 

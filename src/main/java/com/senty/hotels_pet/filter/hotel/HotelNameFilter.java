@@ -12,7 +12,8 @@ public class HotelNameFilter implements HotelFilter {
     public Specification<Hotel> apply(HotelFiltersDto filters) {
         return (root, query, cb) -> {
             if (StringUtils.hasText(filters.getName())) {
-                return cb.like(cb.lower(root.get("name")), "%" + filters.getName().toLowerCase() + "%");
+                return cb.like(cb.lower(root.get(Hotel.Fields.name)),
+                        "%" + filters.getName().toLowerCase() + "%");
             }
             return null;
         };

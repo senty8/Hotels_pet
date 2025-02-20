@@ -7,24 +7,21 @@ spring:
     name: Hotels_pet
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/hotel_db
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:hotel_db
+    driver-class-name: org.h2.Driver
     username: user
     password: password
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: none
     show-sql: true
 
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    change-log: classpath:db/changelog-test/db.changelog-test.yaml
 
   h2:
     console:
       enabled: true
       path: /hotel_db
-
-server:
-  port: 8092

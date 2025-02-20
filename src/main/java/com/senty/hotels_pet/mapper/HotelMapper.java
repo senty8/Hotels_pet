@@ -14,6 +14,7 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface HotelMapper {
@@ -24,7 +25,7 @@ public interface HotelMapper {
 
     List<ShortHotelResponseDto> toShortHotelResponseDtoList(List<Hotel> hotels);
 
-    @Mapping(target = "amenities", source = "amenities", qualifiedByName = "amenitiesSetToStringList")
+    @Mapping(target = "amenities", source = "amenities", qualifiedByName = "amenitiesSetToStringSet")
     LongHotelResponseDto toLongHotelResponseDto(Hotel hotel);
 
     Hotel toHotel(CreateHotelRequestDto createHotelRequestDto);
@@ -33,11 +34,11 @@ public interface HotelMapper {
     @Mapping(target = "phone", source = "contacts.phone")
     CreateHotelResponseDto toCreateHotelResponseDto(Hotel save);
 
-    @Named("amenitiesSetToStringList")
-    default List<String> amenitiesSetToStringList(Set<Amenity> amenities) {
+    @Named("amenitiesSetToStringSet")
+    default Set<String> amenitiesSetToStringSet(Set<Amenity> amenities) {
         return amenities.stream()
                 .map(Amenity::getName)
-                .toList();
+                .collect(Collectors.toSet());
     }
     default String mapAddressToString(Address address) {
         return address.toString();

@@ -1,8 +1,6 @@
 package com.senty.hotels_pet.entity;
 
-import com.senty.hotels_pet.config.converter.ArrivalTimeConverter;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,10 +20,8 @@ public class ArrivalTime {
     private long id;
 
     @Column(name = "check_in", nullable = false)
-    @Convert(converter = ArrivalTimeConverter.class)
     private LocalTime checkIn;
 
     @Column(name = "check_out")
-    @Convert(converter = ArrivalTimeConverter.class)
     private LocalTime checkOut;
 }

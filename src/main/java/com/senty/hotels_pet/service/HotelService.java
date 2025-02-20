@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -36,14 +37,16 @@ public class HotelService {
     private final HistogramStrategyFactory histogramStrategyFactory;
 
     public List<ShortHotelResponseDto> getAllHotels() {
+        List<Hotel> allHotels = hotelRepository.findAll();
         List<ShortHotelResponseDto> shortHotelResponseDtoList = hotelMapper
-                .toShortHotelResponseDtoList(hotelRepository.findAll());
+                .toShortHotelResponseDtoList(allHotels);
         log.info("All hotels returned");
         return shortHotelResponseDtoList;
     }
 
     public LongHotelResponseDto getHotelDtoById(long id) {
-        LongHotelResponseDto longHotelResponseDto = hotelMapper.toLongHotelResponseDto(getHotelById(id));
+        Hotel hotel = getHotelById(id);
+        LongHotelResponseDto longHotelResponseDto = hotelMapper.toLongHotelResponseDto(hotel);
         log.info("Hotel with id {} returned", id);
         return longHotelResponseDto;
     }
@@ -61,16 +64,19 @@ public class HotelService {
                 .filter(Objects::nonNull)
                 .reduce(Specification::and)
                 .orElse(null);
+        List<Hotel> filteredHotels = hotelRepository.findAll(spec);
+
         List<ShortHotelResponseDto> shortHotelResponseDtoList = hotelMapper
-                .toShortHotelResponseDtoList(hotelRepository.findAll(spec));
+                .toShortHotelResponseDtoList(filteredHotels);
         log.info("Filtered hotels returned");
         return shortHotelResponseDtoList;
     }
 
     public CreateHotelResponseDto createHotel(CreateHotelRequestDto createHotelRequestDto) {
         Hotel hotel = hotelMapper.toHotel(createHotelRequestDto);
+        Hotel savedHotel = hotelRepository.save(hotel);
         CreateHotelResponseDto createHotelResponseDto = hotelMapper
-                .toCreateHotelResponseDto(hotelRepository.save(hotel));
+                .toCreateHotelResponseDto(savedHotel);
         log.info("Created hotel with id {} returned", createHotelResponseDto.getId());
         return createHotelResponseDto;
     }
@@ -79,9 +85,7 @@ public class HotelService {
         Set<Amenity> amenitiesByName = amenityService.getAmenitiesByNames(amenitiesNames);
 
         Hotel hotel = getHotelById(id);
-        Set<Amenity> amenitiesInHotel = hotel.getAmenities();
-        amenitiesInHotel.addAll(amenitiesByName);
-        hotel.setAmenities(amenitiesInHotel);
+        hotel.setAmenities(amenitiesByName);
 
         hotelRepository.save(hotel);
         log.info("Added amenities to hotel with id {}", id);
