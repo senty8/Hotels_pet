@@ -8,10 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.experimental.FieldNameConstants;
 
 @Entity
 @Data
 @Table(name = "address")
+@FieldNameConstants
 public class Address {
 
     @Id

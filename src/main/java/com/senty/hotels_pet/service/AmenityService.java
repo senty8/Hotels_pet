@@ -27,11 +27,7 @@ public class AmenityService {
 
         amenitiesNames.removeAll(amenitiesNamesInDatabase);
         Set<Amenity> newAmenities = amenitiesNames.stream()
-                .map(name -> {
-                    Amenity amenity = new Amenity();
-                    amenity.setName(name);
-                    return amenity;
-                })
+                .map(Amenity::new)
                 .collect(Collectors.toSet());
         List<Amenity> savedAmenities = amenityRepository.saveAll(newAmenities);
         amenitiesInDatabase.addAll(savedAmenities);

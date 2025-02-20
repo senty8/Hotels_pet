@@ -12,7 +12,7 @@ public class HotelBrandFilter implements HotelFilter {
     public Specification<Hotel> apply(HotelFiltersDto filters) {
         return (root, query, cb) -> {
             if (StringUtils.hasText(filters.getBrand())) {
-                return cb.like(cb.lower(root.get("brand")), "%" + filters.getBrand().toLowerCase() + "%");
+                return cb.like(cb.lower(root.get(Hotel.Fields.brand)), "%" + filters.getBrand().toLowerCase() + "%");
             }
             return null;
         };

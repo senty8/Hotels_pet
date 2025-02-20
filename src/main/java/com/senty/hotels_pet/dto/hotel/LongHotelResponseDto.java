@@ -5,7 +5,7 @@ import com.senty.hotels_pet.dto.hotel.arrival_time.ArrivalTimeResponseDto;
 import com.senty.hotels_pet.dto.hotel.contacts.ContactsResponseDto;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class LongHotelResponseDto {
@@ -15,5 +15,5 @@ public class LongHotelResponseDto {
     private AddressResponseDto address;
     private ContactsResponseDto contacts;
     private ArrivalTimeResponseDto arrivalTime;
-    private List<String> amenities;
+    private Set<String> amenities;
 }

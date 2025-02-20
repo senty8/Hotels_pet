@@ -1,5 +1,15 @@
 version: '3'
 services:
+  hotels-pet:
+    build: hotels_pet
+    image: hotels_pet:latest
+    restart: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://hotel_postgres:5432/hotel_db
+    ports:
+      - '8092:8092'
+    networks:
+      - hotel-network
   hotel_postgres:
     image: postgres:13.3
     environment:
@@ -8,3 +18,9 @@ services:
       - POSTGRES_DB=hotel_db
     ports:
       - '5432:5432'
+    networks:
+      - hotel-network
+
+networks:
+  hotel-network:
+    driver: bridge

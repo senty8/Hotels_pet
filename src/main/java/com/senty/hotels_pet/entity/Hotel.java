@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "hotel")
+@FieldNameConstants
 public class Hotel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
