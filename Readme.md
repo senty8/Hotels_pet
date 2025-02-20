@@ -10,6 +10,7 @@
 * [H2](https://ru.wikipedia.org/wiki/H2)
 * [Liquibase](https://www.liquibase.org/)
 * [Maven](https://maven.apache.org)
+* [Docker](https://hub.docker.com)
 
 
 # Как запустить локально?
@@ -42,18 +43,6 @@ mvn spring-boot:run
 docker-compose up -d
 ```
 
-3. Собираем проект
-
-```shell
-mvn clean install
-```
-
-4. Запускаем проект с нужным профилем
-
-```shell
-mvn spring-boot:run -Dspring-boot.run.profiles=postgres
-```
-
 # Код
 
 * Обычная трёхслойная
@@ -68,3 +57,6 @@ mvn spring-boot:run -Dspring-boot.run.profiles=postgres
 * Для тестирования используются
 * Mockito
 * JUnit5
+
+* Код покрыт Unit тестами на 71%
+* Также написаны интеграционные тесты на все endpoints
