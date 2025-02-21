@@ -1,4 +1,3 @@
-version: '3'
 services:
   hotels-pet:
     build: hotels_pet
