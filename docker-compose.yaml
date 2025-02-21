@@ -2,7 +2,7 @@ version: '3'
 services:
   hotels-pet:
     build: hotels_pet
-    image: hotels_pet:latest
+    image: senty0/hotels_pet:latest
     restart: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://hotel_postgres:5432/hotel_db
