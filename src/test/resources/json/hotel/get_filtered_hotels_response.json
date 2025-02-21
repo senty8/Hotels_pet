@@ -1,0 +1,16 @@
+[
+  {
+    "id": 2,
+    "name": "Seaside Resort",
+    "description": "A beachfront hotel with ocean view",
+    "address": "22 Broadway, New York, 90012, USA",
+    "phone": "+1-213-555-0202"
+  },
+  {
+    "id": 3,
+    "name": "Mountain Resort",
+    "description": "A cozy lodge in the mountains",
+    "address": "5 5th Avenue, New York, 60601, USA",
+    "phone": "+1-312-555-0303"
+  }
+]

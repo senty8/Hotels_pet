@@ -1,249 +1,213 @@
 package com.senty.hotels_pet.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.senty.hotels_pet.dto.hotel.CreateHotelRequestDto;
 import com.senty.hotels_pet.dto.hotel.CreateHotelResponseDto;
-import com.senty.hotels_pet.dto.hotel.HotelFiltersDto;
 import com.senty.hotels_pet.dto.hotel.LongHotelResponseDto;
 import com.senty.hotels_pet.dto.hotel.ShortHotelResponseDto;
-import com.senty.hotels_pet.dto.hotel.address.AddressResponseDto;
-import com.senty.hotels_pet.dto.hotel.address.CreateAddressRequestDto;
-import com.senty.hotels_pet.dto.hotel.arrival_time.ArrivalTimeResponseDto;
-import com.senty.hotels_pet.dto.hotel.arrival_time.CreateArrivalTimeRequestDto;
-import com.senty.hotels_pet.dto.hotel.contacts.ContactsResponseDto;
-import com.senty.hotels_pet.dto.hotel.contacts.CreateContactsRequestDto;
 import com.senty.hotels_pet.entity.Amenity;
 import com.senty.hotels_pet.entity.Hotel;
 import com.senty.hotels_pet.repository.HotelRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
+import com.senty.hotels_pet.util.JsonTestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@Slf4j
-@SpringBootTest
-@TestPropertySource(locations = "classpath:application-test.yaml")
-@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class HotelControllerTest {
     @Autowired
-    private HotelController hotelController;
+    private WebTestClient webTestClient;
     @Autowired
     private HotelRepository hotelRepository;
 
-    private ShortHotelResponseDto shortHotelResponseDto;
-    private LongHotelResponseDto longHotelResponseDto;
-    private Set<String> amenities;
-
-    @BeforeEach
-    void setUp() {
-        shortHotelResponseDto = new ShortHotelResponseDto();
-        shortHotelResponseDto.setId(1L);
-        shortHotelResponseDto.setName("DoubleTree by Hilton Minsk");
-        shortHotelResponseDto.setDescription("The DoubleTree by Hilton Hotel Minsk offers 193 luxurious rooms in the Belorussian capital and stunning views of Minsk city from the hotel's 20th floor ...");
-        shortHotelResponseDto.setAddress("9 Pobediteley Avenue, Minsk, 220004, Belarus");
-        shortHotelResponseDto.setPhone("+375 17 309-80-00");
-
-        AddressResponseDto addressResponseDto = new AddressResponseDto();
-        addressResponseDto.setHouseNumber(9);
-        addressResponseDto.setStreet("Pobediteley Avenue");
-        addressResponseDto.setCity("Minsk");
-        addressResponseDto.setCountry("Belarus");
-        addressResponseDto.setPostCode("220004");
-
-        ContactsResponseDto contactsResponseDto = new ContactsResponseDto();
-        contactsResponseDto.setPhone("+375 17 309-80-00");
-        contactsResponseDto.setEmail("doubletreeminsk.info@hilton.com");
-
-        ArrivalTimeResponseDto arrivalTimeResponseDto = new ArrivalTimeResponseDto();
-        arrivalTimeResponseDto.setCheckIn(LocalTime.of(14, 0));
-        arrivalTimeResponseDto.setCheckOut(LocalTime.of(12, 0));
-
-        amenities = Set.of("Free parking",
-                "Free WiFi",
-                "Non-smoking rooms",
-                "Concierge",
-                "On-site restaurant",
-                "Fitness center",
-                "Pet-friendly rooms",
-                "Room service",
-                "Business center",
-                "Meeting rooms");
-
-        longHotelResponseDto = new LongHotelResponseDto();
-        longHotelResponseDto.setId(1L);
-        longHotelResponseDto.setName("DoubleTree by Hilton Minsk");
-        longHotelResponseDto.setBrand("Hilton");
-        longHotelResponseDto.setAddress(addressResponseDto);
-        longHotelResponseDto.setContacts(contactsResponseDto);
-        longHotelResponseDto.setArrivalTime(arrivalTimeResponseDto);
-        longHotelResponseDto.setAmenities(amenities);
-    }
-
     @Test
     void getAllHotelsTest() {
-        List<ShortHotelResponseDto> allHotels = hotelController.getAllHotels();
+        List<ShortHotelResponseDto> expected = JsonTestUtil
+                .readJsonFromFile("json/hotel/get_all_hotels_response.json", new TypeReference<>() {});
 
-        ShortHotelResponseDto resultDto = allHotels.stream().filter(dto -> dto.getId() == 1)
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+        List<ShortHotelResponseDto> allHotels = webTestClient.get()
+                .uri("/hotels")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ShortHotelResponseDto.class)
+                .returnResult()
+                .getResponseBody();
 
-        assertThat(resultDto).isEqualTo(shortHotelResponseDto);
-        assertThat(allHotels).hasSize(3);
+        assertThat(allHotels)
+                .hasSize(3)
+                .isEqualTo(expected);
     }
 
     @Test
     void getHotelByIdTest() {
-        LongHotelResponseDto hotelById = hotelController.getHotelById(1);
+        LongHotelResponseDto longHotelResponseDto = JsonTestUtil
+                .readJsonFromFile("json/hotel/get_hotel_by_id_response.json", new TypeReference<>() {});
 
-        assertThat(hotelById).isEqualTo(longHotelResponseDto);
+        LongHotelResponseDto hotel = webTestClient.get()
+                .uri("/hotels/{id}", 1)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(LongHotelResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(hotel)
+                .isEqualTo(longHotelResponseDto);
     }
 
     @Test
     void getFilteredHotelsTest_filterByName() {
-        HotelFiltersDto hotelFiltersDto = new HotelFiltersDto();
-        hotelFiltersDto.setName("Resort");
+        List<ShortHotelResponseDto> expected = getExpectedFilteredHotels();
 
-        List<ShortHotelResponseDto> filteredHotels = hotelController.getFilteredHotels(hotelFiltersDto);
+        List<ShortHotelResponseDto> filteredHotels = webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/search")
+                        .queryParam("name", "Resort")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ShortHotelResponseDto.class)
+                .returnResult()
+                .getResponseBody();
 
         assertThat(filteredHotels)
-                .hasSize(2)
-                .allMatch(hotel -> hotel.getName().toLowerCase().contains("Resort".toLowerCase()));
+                .isEqualTo(expected);
     }
 
     @Test
     void getFilteredHotelsTest_filterByBrand() {
-        HotelFiltersDto hotelFiltersDto = new HotelFiltersDto();
-        hotelFiltersDto.setBrand("Marriott");
+        List<ShortHotelResponseDto> expected = getExpectedFilteredHotels();
 
-        List<ShortHotelResponseDto> filteredHotels = hotelController.getFilteredHotels(hotelFiltersDto);
+        List<ShortHotelResponseDto> filteredHotels = webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/search")
+                        .queryParam("brand", "Marriott")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ShortHotelResponseDto.class)
+                .returnResult()
+                .getResponseBody();
 
         assertThat(filteredHotels)
-                .hasSize(2)
-                .doesNotContain(shortHotelResponseDto);
+                .isEqualTo(expected);
     }
 
     @Test
     void getFilteredHotelsTest_filterByCity() {
-        HotelFiltersDto hotelFiltersDto = new HotelFiltersDto();
-        hotelFiltersDto.setCity("New York");
+        List<ShortHotelResponseDto> expected = getExpectedFilteredHotels();
 
-        List<ShortHotelResponseDto> filteredHotels = hotelController.getFilteredHotels(hotelFiltersDto);
+        List<ShortHotelResponseDto> filteredHotels = webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/search")
+                        .queryParam("city", "New York")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ShortHotelResponseDto.class)
+                .returnResult()
+                .getResponseBody();
 
         assertThat(filteredHotels)
-                .hasSize(2)
-                .allMatch(hotel -> hotel
-                        .getAddress()
-                        .split(",")[1]
-                        .toLowerCase()
-                        .contains("New York".toLowerCase()));
+                .isEqualTo(expected);
     }
 
     @Test
     void getFilteredHotelsTest_filterByCountry() {
-        HotelFiltersDto hotelFiltersDto = new HotelFiltersDto();
-        hotelFiltersDto.setCountry("USA");
+        List<ShortHotelResponseDto> expected = getExpectedFilteredHotels();
 
-        List<ShortHotelResponseDto> filteredHotels = hotelController.getFilteredHotels(hotelFiltersDto);
+        List<ShortHotelResponseDto> filteredHotels = webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/search")
+                        .queryParam("country", "USA")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ShortHotelResponseDto.class)
+                .returnResult()
+                .getResponseBody();
 
         assertThat(filteredHotels)
-                .hasSize(2)
-                .allMatch(hotel -> hotel
-                        .getAddress()
-                        .split(",")[3]
-                        .toLowerCase()
-                        .contains("USA".toLowerCase()));
+                .isEqualTo(expected);
     }
 
     @Test
     void getFilteredHotelsTest_filterByAmenities() {
-        Set<String> amenities = Set.of("Play Station 5");
-        HotelFiltersDto hotelFiltersDto = new HotelFiltersDto();
-        hotelFiltersDto.setAmenities(amenities);
+        List<ShortHotelResponseDto> expected = getExpectedFilteredHotels();
 
-        List<ShortHotelResponseDto> filteredHotels = hotelController.getFilteredHotels(hotelFiltersDto);
+        List<ShortHotelResponseDto> filteredHotels = webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/search")
+                        .queryParam("amenities", "Play Station 5")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ShortHotelResponseDto.class)
+                .returnResult()
+                .getResponseBody();
 
         assertThat(filteredHotels)
-                .hasSize(2)
-                .doesNotContain(shortHotelResponseDto);
+                .isEqualTo(expected);
+    }
+
+    private List<ShortHotelResponseDto> getExpectedFilteredHotels() {
+        return JsonTestUtil.readJsonFromFile("json/hotel/get_filtered_hotels_response.json",
+                new TypeReference<>() {});
     }
 
     @Test
     @Transactional
+    @Rollback(false)
     void createHotelTest() {
-        CreateHotelRequestDto input = getCreateHotelRequestDto();
-        CreateHotelResponseDto expected = getCreateHotelResponseDto();
+        CreateHotelRequestDto input = JsonTestUtil.readJsonFromFile("json/hotel/create_hotel_request.json",
+                new TypeReference<>() {});
+        CreateHotelResponseDto expected = JsonTestUtil.readJsonFromFile("json/hotel/create_hotel_response.json",
+                new TypeReference<>() {});
 
-        CreateHotelResponseDto hotel = hotelController.createHotel(input);
-        Hotel hotelFromRepository = hotelRepository.findById(expected.getId()).orElseGet(null);
+        CreateHotelResponseDto response = webTestClient.post()
+                .uri("/hotels")
+                .bodyValue(input)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CreateHotelResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+        Hotel hotelFromRepository = hotelRepository.findById(expected.getId())
+                .orElseThrow(NoSuchElementException::new);
+
+        hotelRepository.deleteById(expected.getId());
 
         assertThat(hotelFromRepository)
                 .isNotNull()
                 .matches(hotelInDatabase -> hotelInDatabase.getName().equals(expected.getName()));
 
-        assertThat(hotel)
+        assertThat(response)
                 .isEqualTo(expected);
-    }
-
-    private static CreateHotelResponseDto getCreateHotelResponseDto() {
-        CreateHotelResponseDto createHotelResponseDto = new CreateHotelResponseDto();
-        createHotelResponseDto.setId(4L);
-        createHotelResponseDto.setName("DoubleTree by Hilton Minsk");
-        createHotelResponseDto.setDescription("The DoubleTree by Hilton Hotel Minsk offers 193 luxurious rooms in the Belorussian capital and stunning views of Minsk city from the hotel's 20th floor ...");
-        createHotelResponseDto.setAddress("9 Pobediteley Avenue, Minsk, 220004, Belarus");
-        createHotelResponseDto.setPhone("+375 17 309-80-00");
-        return createHotelResponseDto;
-    }
-
-    private static CreateHotelRequestDto getCreateHotelRequestDto() {
-        CreateAddressRequestDto createAddressRequestDto = new CreateAddressRequestDto();
-        createAddressRequestDto.setHouseNumber(9);
-        createAddressRequestDto.setStreet("Pobediteley Avenue");
-        createAddressRequestDto.setCity("Minsk");
-        createAddressRequestDto.setCountry("Belarus");
-        createAddressRequestDto.setPostCode("220004");
-
-        CreateContactsRequestDto createContactsRequestDto = new CreateContactsRequestDto();
-        createContactsRequestDto.setPhone("+375 17 309-80-00");
-        createContactsRequestDto.setEmail("doubletreeminsk.info@hilton.com");
-
-        CreateArrivalTimeRequestDto createArrivalTimeRequestDto = new CreateArrivalTimeRequestDto();
-        createArrivalTimeRequestDto.setCheckIn(LocalTime.of(14, 0));
-        createArrivalTimeRequestDto.setCheckOut(LocalTime.of(12, 0));
-
-        CreateHotelRequestDto createHotelRequestDto = new CreateHotelRequestDto();
-        createHotelRequestDto.setName("DoubleTree by Hilton Minsk");
-        createHotelRequestDto.setDescription("The DoubleTree by Hilton Hotel Minsk offers 193 luxurious rooms in the Belorussian capital and stunning views of Minsk city from the hotel's 20th floor ...");
-        createHotelRequestDto.setBrand("Hilton");
-        createHotelRequestDto.setAddress(createAddressRequestDto);
-        createHotelRequestDto.setContacts(createContactsRequestDto);
-        createHotelRequestDto.setArrivalTime(createArrivalTimeRequestDto);
-        return createHotelRequestDto;
     }
 
     @Test
     @Transactional
+    @Rollback(false)
     void addAmenitiesToHotelTest() {
+        Set<String> amenitiesBeforeChange = JsonTestUtil.readJsonFromFile("json/hotel/amenities_before_change.json",
+                new TypeReference<>() {});
 
-        Set<String> newAmenities = new HashSet<>(amenities);
-        newAmenities.remove("Free WiFi");
-        newAmenities.add("Personal computer");
-        Set<String> expectedSet = new HashSet<>(newAmenities);
+        Set<String> input = JsonTestUtil.readJsonFromFile("json/hotel/add_amenities_request.json",
+                new TypeReference<>() {});
 
-        hotelController.addAmenitiesToHotel(1, newAmenities);
+        webTestClient.post()
+                .uri("/hotels/{id}/amenities", 1)
+                .bodyValue(input)
+                .exchange()
+                .expectStatus().isOk();
         Hotel hotel = hotelRepository.findById(1L).orElse(null);
 
         assertThat(hotel).isNotNull();
@@ -251,8 +215,13 @@ class HotelControllerTest {
                 .stream()
                 .map(Amenity::getName)
                 .collect(Collectors.toSet()))
-                .isEqualTo(expectedSet);
+                .isEqualTo(input);
 
+        webTestClient.post()
+                .uri("/hotels/{id}/amenities", 1)
+                .bodyValue(amenitiesBeforeChange)
+                .exchange()
+                .expectStatus().isOk();
     }
 
     @Test
@@ -261,7 +230,13 @@ class HotelControllerTest {
         expected.put("Hilton", 1L);
         expected.put("Marriott", 2L);
 
-        Map<String, Long> result = hotelController.getHistogram("brand");
+        Map<String, Long> result = webTestClient.get()
+                .uri("/histogram/{param}", "brand")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<Map<String, Long>>() {})
+                .returnResult()
+                .getResponseBody();
 
         assertThat(result)
                 .isEqualTo(expected);
@@ -273,7 +248,13 @@ class HotelControllerTest {
         expected.put("Minsk", 1L);
         expected.put("New York", 2L);
 
-        Map<String, Long> result = hotelController.getHistogram("city");
+        Map<String, Long> result = webTestClient.get()
+                .uri("/histogram/{param}", "city")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<Map<String, Long>>() {})
+                .returnResult()
+                .getResponseBody();
 
         assertThat(result)
                 .isEqualTo(expected);
@@ -285,7 +266,13 @@ class HotelControllerTest {
         expected.put("Belarus", 1L);
         expected.put("USA", 2L);
 
-        Map<String, Long> result = hotelController.getHistogram("country");
+        Map<String, Long> result = webTestClient.get()
+                .uri("/histogram/{param}", "country")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<Map<String, Long>>() {})
+                .returnResult()
+                .getResponseBody();
 
         assertThat(result)
                 .isEqualTo(expected);
@@ -306,7 +293,13 @@ class HotelControllerTest {
         expected.put("Meeting rooms", 1L);
         expected.put("Play Station 5", 2L);
 
-        Map<String, Long> result = hotelController.getHistogram("amenities");
+        Map<String, Long> result = webTestClient.get()
+                .uri("/histogram/{param}", "amenities")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<Map<String, Long>>() {})
+                .returnResult()
+                .getResponseBody();
 
         assertThat(result)
                 .isEqualTo(expected);

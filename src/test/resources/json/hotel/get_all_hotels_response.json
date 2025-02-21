@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "DoubleTree by Hilton Minsk",
+    "description": "The DoubleTree by Hilton Hotel Minsk offers 193 luxurious rooms in the Belorussian capital and stunning views of Minsk city from the hotel's 20th floor ...",
+    "address": "9 Pobediteley Avenue, Minsk, 220004, Belarus",
+    "phone": "+375 17 309-80-00"
+  },
+  {
+    "id": 2,
+    "name": "Seaside Resort",
+    "description": "A beachfront hotel with ocean view",
+    "address": "22 Broadway, New York, 90012, USA",
+    "phone": "+1-213-555-0202"
+  },
+  {
+    "id": 3,
+    "name": "Mountain Resort",
+    "description": "A cozy lodge in the mountains",
+    "address": "5 5th Avenue, New York, 60601, USA",
+    "phone": "+1-312-555-0303"
+  }
+]

@@ -21,7 +21,7 @@
 git clone https://github.com/senty8/Hotels_pet
 ```
 
-2. Собираем проект
+2. Собираем проект (для сборки рекомендуется использовать amazon corretto 17)
 
 ```shell
 mvn clean install
